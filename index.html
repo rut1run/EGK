@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>継続確認 管理画面</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--y:#ffd400;--y2:#fff0a3;--y3:#fff9d1;--ink:#26220f;--mut:#6b6650;--line:#e8e2b9;
+--disp:"Dela Gothic One","Yu Gothic","Hiragino Sans",sans-serif;
+--body:"Zen Kaku Gothic New","Yu Gothic","Hiragino Sans",sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font:500 15px/1.75 var(--body)}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.app{display:grid;grid-template-columns:256px 1fr;min-height:100vh}
+
+/* サイドバー */
+.side{position:sticky;top:0;height:100vh;overflow:auto;padding:22px 16px;border-right:1.5px solid var(--ink);display:flex;flex-direction:column;gap:6px}
+.brand{display:flex;gap:10px;align-items:center;margin:0 6px 16px}
+.brand b{font:400 19px/1.2 var(--disp);display:block}
+.brand small{color:var(--mut);font-size:12px}
+.side nav button,.si{display:block;width:100%;text-align:left;border:1.5px solid transparent;background:none;border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:700}
+.side nav button:hover,.si:hover{background:var(--y3)}
+.side nav button.on{background:var(--y);border-color:var(--ink)}
+.n{float:right;background:#fff;border:1.5px solid var(--ink);border-radius:99px;padding:0 8px;font-size:12px;line-height:19px;margin-top:2px}
+.sh{margin:20px 12px 4px;font-size:13px;font-weight:700;color:var(--mut)}
+.si{font-weight:500}.si b{display:block;font-size:14px}
+.si small{display:block;font-size:12px;color:var(--mut)}
+.si em{display:block;height:6px;margin-top:5px;border:1.2px solid var(--ink);border-radius:9px;overflow:hidden}
+.si em i{display:block;height:100%;background:var(--y)}
+.si.on{background:var(--y3);border-color:var(--ink)}
+.foot{margin:auto 6px 0;font-size:12px;color:var(--mut)}
+
+/* メイン */
+main{padding:34px clamp(18px,4vw,52px) 80px;max-width:1040px;width:100%}
+.ph{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+h1{font:400 clamp(26px,3.6vw,36px)/1.25 var(--disp);margin:0;letter-spacing:.01em}
+.ph p{margin:4px 0 0;color:var(--mut)}
+h2{font:400 24px/1.3 var(--disp);margin:34px 0 0}
+.mut{color:var(--mut);font-size:13px}
+label{display:block;font-weight:700;margin:18px 0 5px;font-size:14px}
+input,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--ink);border-radius:8px;background:#fff}
+input::placeholder,textarea::placeholder{color:#a9a487}
+textarea{min-height:150px;resize:vertical}
+.b{background:var(--y);border:2px solid var(--ink);border-radius:99px;padding:10px 26px;font-weight:700;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.b:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.b:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.b:disabled{opacity:.55;pointer-events:none}
+.g{background:#fff;border:1.5px solid var(--ink);border-radius:99px;padding:4px 14px;cursor:pointer;font-weight:700;font-size:13px;text-decoration:none;display:inline-block;color:var(--ink)}
+.g:hover{background:var(--y)}
+.note{margin-top:16px;padding:12px 16px;background:var(--y3);border:1.5px solid var(--ink);border-radius:10px}
+.bad{font-weight:700}
+
+/* 作成: フォーム + プレビュー */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:34px;align-items:start}
+.opt{display:flex;gap:8px;margin-bottom:7px}.opt .e{width:68px;text-align:center;flex:none}
+.pvw{position:sticky;top:24px}
+.pvw>p{margin:8px 0 0;font-size:12px;color:var(--mut)}
+.dm{border:1.5px solid var(--ink);border-radius:14px;padding:14px;background:#fff}
+.emb{border-left:5px solid var(--y);background:var(--y3);border-radius:4px 10px 10px 4px;padding:10px 12px}
+.emb b{display:block;font-weight:700}.emb div{white-space:pre-wrap;word-break:break-word;margin:4px 0}
+.emb small{color:var(--mut);font-size:12px}
+.pbtn{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pbtn span{border:1.5px solid var(--ink);border-radius:7px;padding:2px 12px;font-size:13px;font-weight:700}
+.pb0{background:var(--y)}.pb1{background:#fff}.pb2{background:var(--line)}
+
+/* 一覧 */
+.poll{border-top:1.5px solid var(--ink);padding:16px 0 18px;margin-top:14px}
+.poll:first-of-type{margin-top:12px}
+.pt{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pt b{font-size:17px}.pt .mut{margin-left:auto}
+.tag{border:1.5px solid var(--ink);border-radius:99px;padding:0 10px;font-size:12px;font-weight:700}
+.tag.on{background:var(--y)}
+.bar{display:flex;height:24px;margin:12px 0 8px;border:1.5px solid var(--ink);border-radius:5px;overflow:hidden}
+.bar i{display:block;min-width:4px}.bar i+i{border-left:1.5px solid var(--ink)}
+.leg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px}
+.leg u{display:inline-block;width:14px;height:14px;border:1.5px solid var(--ink);border-radius:3px;vertical-align:-2px;margin-right:6px}
+.s0{background:var(--y)}
+.s1{background:repeating-linear-gradient(135deg,var(--ink) 0 2px,#fff 2px 6px)}
+.s2{background:var(--y2)}
+.s3{background:radial-gradient(var(--ink) 1.2px,#fff 1.5px) 0 0/6px 6px}
+.s4{background:var(--ink)}
+.sp{background:#fff}
+.sf{background:repeating-linear-gradient(45deg,#fff 0 3px,var(--line) 3px 6px)}
+details{margin-top:8px}summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+td{padding:5px 8px;border-top:1px solid var(--line)}td:last-child{text-align:right}
+.acts{margin-top:10px}
+
+/* メンバー */
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.addm{margin-bottom:24px}.addrow{display:flex;gap:8px}.addrow .b{padding:6px 26px;flex:none}.addm textarea{min-height:96px;margin:8px 0}.addm details{margin-top:10px}
+.empty{padding:34px 0;border-top:1.5px solid var(--ink)}
+.empty p{margin:0 0 12px}
+
+@media(max-width:900px){.cols{grid-template-columns:1fr}.pvw{position:static}}
+@media(max-width:760px){
+ .app{display:block}
+ .side{position:static;height:auto;border-right:0;border-bottom:1.5px solid var(--ink);padding:14px}
+ .brand{margin-bottom:6px}.side nav{display:flex;gap:4px}.side nav button{width:auto;flex:1;text-align:center}
+ .sh{display:none}.foot{display:none}
+ #ss{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}.si{min-width:150px}
+}
+@media(prefers-reduced-motion:reduce){.b{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="15.5" fill="#ffd400" stroke="#26220f" stroke-width="1.8"/><path d="M9.5 17.5l5.2 5.2 9.8-10.4" fill="none" stroke="#26220f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><b>継続確認</b><small>チーム管理画面</small></div>
+  </div>
+  <nav id="nav">
+    <button data-t="new" class="on">送る</button>
+    <button data-t="list">回答</button>
+    <button data-t="mem">メンバー<span class="n" id="mc">0</span></button>
+  </nav>
+  <div class="sh">シーズン</div>
+  <div id="ss"></div>
+  <div class="foot">このPCからのみ開けています</div>
+</aside>
+
+<main>
+<section id="new">
+  <header class="ph"><div><h1>継続確認を送る</h1><p>登録メンバー全員のDMに、ボタン付きで届きます。</p></div></header>
+  <div class="cols">
+    <div>
+      <label for="season" style="margin-top:0">シーズン名</label>
+      <input id="season" list="sd" placeholder="例: 2026 Season 2" autocomplete="off">
+      <datalist id="sd"></datalist>
+      <label for="heading">タイトル</label>
+      <input id="heading" value="継続確認">
+      <label for="body">本文</label>
+      <textarea id="body" placeholder="次シーズンも参加できるか回答をお願いします。期限は◯/◯までです。"></textarea>
+      <label>選択肢ボタン（絵文字とラベル、2〜5個）</label>
+      <div id="opts"></div>
+      <button class="g" id="add" type="button">選択肢を追加</button>
+      <p style="margin-top:24px"><button class="b" id="send">DMで送信</button></p>
+      <div id="res"></div>
+    </div>
+    <div class="pvw">
+      <div class="dm"><div class="emb"><b id="pt"></b><div id="pb"></div><small id="pf"></small></div><div class="pbtn" id="pbtn"></div></div>
+      <p>届いたDMのイメージです。実際のDiscordではボタンの色が1つ目は緑、2つ目は赤、3つ目以降はグレーになります。</p>
+    </div>
+  </div>
+</section>
+
+<section id="list" hidden>
+  <header class="ph"><div><h1>シーズンごとの回答</h1><p id="cl"></p></div><a class="g" id="csv" href="/export.csv">CSVで書き出す</a></header>
+  <div id="polls"></div>
+</section>
+
+<section id="mem" hidden>
+  <header class="ph"><div><h1>DMの送り先</h1><p>運営がユーザーIDと名前を入れて、DMの送り先を登録します。</p></div></header>
+  <div class="addm">
+    <div class="addrow">
+      <input id="mid" style="flex:1.5" placeholder="ユーザーID（数字）" inputmode="numeric" aria-label="ユーザーID" autocomplete="off">
+      <input id="mname" style="flex:1" placeholder="名前" aria-label="名前" autocomplete="off">
+      <button class="b" id="madd">追加</button>
+    </div>
+    <details><summary>まとめて追加</summary><textarea id="mbulk" placeholder="1行に1人。IDと名前をスペースで区切ります&#10;123456789012345678 たろう&#10;234567890123456789 はなこ"></textarea><button class="g" id="mbulkadd">まとめて追加</button></details>
+    <details><summary>ユーザーIDの調べ方</summary><p class="mut">Discordの設定 → 詳細設定 → 開発者モードをONにします。メンバーを右クリックして「ユーザーIDをコピー」。DMは、Botと同じサーバーにいる人にだけ届きます。同じIDをもう一度入れると名前を直せます。</p></details>
+    <div id="mres"></div>
+  </div>
+  <div id="ml"></div>
+</section>
+</main>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const api=async(u,o)=>{const r=await fetch(u,o);const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||r.status);return j};
+const post=(u,b)=>api(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})});
+const fmt=t=>new Date(t*1000).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+let data=[],cur='';
+
+function go(t){
+  $$('#nav button').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
+  ['new','list','mem'].forEach(id=>$('#'+id).hidden=id!==t);
+  if(t==='list')loadList();if(t==='mem')loadMembers();scrollTo(0,0);
+}
+$$('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+
+/* 作成フォーム */
+function pv(){
+  $('#pt').textContent='📋 '+($('#heading').value||'タイトル');
+  $('#pb').textContent=$('#body').value||'本文がここに表示されます';
+  $('#pf').textContent='シーズン: '+($('#season').value||'未入力')+' ｜ 🟢 受付中（押し直すと変更できます）';
+  $('#pbtn').innerHTML=$$('.opt').map((d,i)=>`<span class="pb${Math.min(i,2)}">${esc(d.querySelector('.e').value)} ${esc(d.querySelector('.l').value||'…')}</span>`).join('');
+}
+function addOpt(e='',l=''){
+  if($$('.opt').length>=5)return;
+  const d=document.createElement('div');d.className='opt';
+  d.innerHTML=`<input class="e" placeholder="😀" aria-label="絵文字" value="${esc(e)}"><input class="l" placeholder="ラベル" aria-label="ラベル" value="${esc(l)}"><button class="g x" type="button" aria-label="削除">削除</button>`;
+  d.querySelector('.x').onclick=()=>{d.remove();pv()};$('#opts').append(d);pv();
+}
+$('#add').onclick=()=>addOpt();
+[['✅','継続'],['❌','辞退'],['🤔','未定']].forEach(([e,l])=>addOpt(e,l));
+['season','heading','body'].forEach(id=>$('#'+id).oninput=pv);$('#opts').oninput=pv;pv();
+
+$('#send').onclick=async()=>{
+  const options=$$('.opt').map(d=>({emoji:d.querySelector('.e').value,label:d.querySelector('.l').value}));
+  const b=$('#send');b.disabled=true;b.textContent='送信中…';$('#res').innerHTML='';
+  try{
+    const r=await post('/api/polls',{season:$('#season').value,heading:$('#heading').value,body:$('#body').value,options});
+    $('#res').innerHTML=`<div class="note">${r.sent}人に送信しました（ID: ${r.id}）。`+
+      (r.failed.length?`<br><span class="bad">送信できなかった人（${r.failed.length}）：</span>`+r.failed.map(f=>`${esc(f.name)}（${esc(f.reason)}）`).join('、'):'')+'</div>';
+    loadList();
+  }catch(e){$('#res').innerHTML=`<div class="note bad">送信できませんでした。${esc(e.message)}</div>`}
+  b.disabled=false;b.textContent='DMで送信';
+};
+
+/* メンバー */
+async function loadMembers(){
+  const m=await api('/api/members');$('#mc').textContent=m.length;
+  $('#ml').innerHTML=m.length?m.map(x=>`<div class="mrow"><span>${esc(x.name)}　<small class="mut">${esc(x.id)}</small></span><button class="g" data-del="${x.id}">外す</button></div>`).join(''):
+    '<div class="empty"><p>まだ誰も登録していません。上のフォームにユーザーIDと名前を入れて追加してください。</p></div>';
+}
+$('#ml').onclick=async e=>{const id=e.target.dataset.del;if(id&&confirm('DMの送り先から外しますか？')){await api('/api/members/'+id,{method:'DELETE'});loadMembers()}};
+
+/* 回答一覧 */
+const stat=s=>{let a=0,p=0;s.polls.forEach(x=>{a+=Object.values(x.counts).reduce((m,n)=>m+n,0);p+=x.pending});return{a,p,r:a+p?Math.round(100*a/(a+p)):0}};
+function side(){
+  $('#ss').innerHTML=`<button class="si${cur?'':' on'}" data-s=""><b>すべて</b></button>`+data.map(s=>{const t=stat(s);
+    return `<button class="si${cur===s.season?' on':''}" data-s="${esc(s.season)}"><b>${esc(s.season)}</b><small>${s.polls.length}件　回答率 ${t.r}%</small><em><i style="width:${t.r}%"></i></em></button>`}).join('');
+}
+$('#ss').onclick=e=>{const b=e.target.closest('.si');if(b){cur=b.dataset.s;go('list')}};
+
+function pollHTML(p){
+  const o=p.options,lab=i=>(o[i].emoji||'')+' '+o[i].label;
+  const seg=[...o.map((x,i)=>['s'+i,p.counts[i]||0]),['sp',p.pending],['sf',p.failed]].filter(x=>x[1]>0);
+  const leg=[...o.map((x,i)=>['s'+i,lab(i),p.counts[i]||0]),['sp','未回答',p.pending],...(p.failed?[['sf','送信失敗',p.failed]]:[])]
+    .map(([c,l,n])=>`<span><u class="${c}"></u>${esc(l)} <b>${n}</b></span>`).join('');
+  const tr=p.people.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.status==='failed'?'送信失敗':x.choice==null?'未回答':esc(lab(x.choice))}</td><td class="mut">${x.at?fmt(x.at):''}</td></tr>`).join('');
+  return `<article class="poll"><div class="pt"><b>${esc(p.heading)}</b><span class="tag${p.closed?'':' on'}">${p.closed?'締切':'受付中'}</span><span class="mut">ID ${p.id}　${fmt(p.created_at)}</span></div>
+    <div class="bar">${seg.map(([c,n])=>`<i class="${c}" style="flex:${n}" title="${n}人"></i>`).join('')}</div><div class="leg">${leg}</div>
+    <details><summary>一人ずつの回答</summary><table>${tr}</table></details>
+    ${p.closed?'':`<div class="acts"><button class="g" data-close="${p.id}">受付を締め切る</button></div>`}</article>`;
+}
+function render(){
+  const rows=data.filter(s=>!cur||s.season===cur);
+  $('#cl').textContent=cur?`${cur} を表示中`:'すべてのシーズンを新しい順に表示中';
+  $('#csv').href='/export.csv'+(cur?'?season='+encodeURIComponent(cur):'');
+  $('#polls').innerHTML=rows.length?rows.map(s=>{const t=stat(s);
+    return `<section><h2>${esc(s.season)}</h2><p class="mut" style="margin:2px 0 0">${s.polls.length}件の確認。回答済み ${t.a}人、未回答 ${t.p}人</p>${s.polls.map(pollHTML).join('')}</section>`}).join(''):
+    '<div class="empty"><p>まだ継続確認がありません。最初の1通を送ってみましょう。</p><button class="b" onclick="go(\'new\')">継続確認を送る</button></div>';
+}
+async function loadList(){
+  data=(await api('/api/polls')).seasons;
+  if(cur&&!data.some(s=>s.season===cur))cur='';
+  $('#sd').innerHTML=data.map(s=>`<option value="${esc(s.season)}">`).join('');
+  side();render();
+}
+$('#polls').onclick=async e=>{const id=e.target.dataset.close;
+  if(id&&confirm('締め切りますか？ 届いているDMのボタンも使えなくなります。')){e.target.disabled=true;await post(`/api/polls/${id}/close`);loadList()}};
+async function addMembers(entries){
+  $('#mres').innerHTML='';
+  try{
+    const r=await post('/api/members',{entries});
+    $('#mres').innerHTML=`<div class="note">${r.added}人を登録しました。`+(r.errors.length?`<br><span class="bad">登録できなかった行（${r.errors.length}）：</span>`+r.errors.map(e=>`${esc(e.line)}（${esc(e.reason)}）`).join('、'):'')+'</div>';
+    if(r.added&&!r.errors.length)$('#mid').value=$('#mname').value=$('#mbulk').value='';
+    loadMembers();
+  }catch(e){$('#mres').innerHTML=`<div class="note bad">登録できませんでした。${esc(e.message)}</div>`}
+}
+$('#madd').onclick=()=>addMembers([{id:$('#mid').value,name:$('#mname').value}]);
+$('#mbulkadd').onclick=()=>addMembers($('#mbulk').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const [id,...n]=l.split(/[\s,、　]+/);return{id,name:n.join(' ')}}));
+loadMembers();loadList();
+</script>
+</body>
+</html>
