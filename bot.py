@@ -17,6 +17,7 @@ import discord
 from aiohttp import web
 from discord.ext import commands
 from dotenv import load_dotenv
+from vote_panel import VotePanel
 
 load_dotenv(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),
@@ -158,6 +159,7 @@ async def close_poll(pid):
 # ───────────── Bot ─────────────
 class KeizokuBot(commands.Bot):
     async def setup_hook(self):
+        await self.add_cog(VotePanel(self, db))
         for p in db.execute("SELECT * FROM polls WHERE closed=0"):
             self.add_view(PollView(p["id"], json.loads(p["options"])))  # 再起動後もボタン有効
         if GUILD_ID:
